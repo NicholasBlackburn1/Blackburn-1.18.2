@@ -1,0 +1,6 @@
+JVM:         /usr/lib/jvm/java-17-openjdk-amd64/bin/java
+JVM Args:    
+Run Args:    "--client", "/home/nicky/Documents/Blakburn Client/Blackburn-1.18.2/projects/mcp/build/mcp/stripClient/output.jar", "--server", "/home/nicky/Documents/Blakburn Client/Blackburn-1.18.2/projects/mcp/build/mcp/stripServer/output.jar", "--ann", "1.18.2", "--output", "/home/nicky/Documents/Blakburn Client/Blackburn-1.18.2/projects/mcp/build/mcp/merge/output.jar", "--inject", "false"
+Classpath:   /home/nicky/.gradle/caches/forge_gradle/maven_downloader/net/minecraftforge/mergetool/1.1.3/mergetool-1.1.3-fatjar.jar
+Working Dir: /home/nicky/Documents/Blakburn Client/Blackburn-1.18.2/projects/mcp/build/mcp/merge
+Main Class:  net.minecraftforge.mergetool.ConsoleMerger

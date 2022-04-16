@@ -29,7 +29,7 @@ configurations {
     compile.extendsFrom shade
 }
 
-group = 'me.yourname'
+group = 'space.blackburn'
 version = '1.0.0'
 
 ext {
@@ -42,15 +42,49 @@ ext {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
+    
 }
 
 dependencies {
     implementation 'net.minecraftforge:forgespi:' + spi_version
+    implementation group: "com.github.twitch4j", name: "twitch4j", version: "1.8.0"
+
+	// Logging Implementation
+	implementation group: "ch.qos.logback", name: "logback-classic", version: "1.2.10"
+
+    implementation 'club.minnced:java-discord-rpc:2.0.1'
+
+
+    // YAML Parser
+	implementation group: "com.fasterxml.jackson.dataformat", name: "jackson-dataformat-yaml", version: "2.13.0"
+  
+    shade group: "com.github.twitch4j", name: "twitch4j", version: "1.8.0"
+
+	// Logging Implementation
+	shade group: "ch.qos.logback", name: "logback-classic", version: "1.2.10"
+
+    shade 'club.minnced:java-discord-rpc:2.0.1'
+
+
+    // YAML Parser
+	shade group: "com.fasterxml.jackson.dataformat", name: "jackson-dataformat-yaml", version: "2.13.0"
+
+
+
 //    Use the shade to add the lib to the jar
 //    or use compile if you want to load the lib from the version.json
 //    from a maven repo
 //    shade 'package-here'
 //    compile 'package-here'
+}
+
+project.tasks.named("processResources") {
+   duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+project.tasks.named("jar") {
+   duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 project(':mcp') {
@@ -71,12 +105,33 @@ patcher {
 }
 
 jar {
+    
     configurations.shade.each { dep ->
         from(project.zipTree(dep)) {
-            exclude 'META-INF', 'META-INF/**'
+            
+        manifest {
+        if (!configurations.compile.isEmpty()) {
+            attributes(
+                    'Class-Path': configurations.compile.collect{it.toURI().toString()}.join(' '),
+                    'Main-Class': 'net.blackburn.Start')
         }
     }
+        sourceSets {
+        main {
+        resources {
+            srcDirs "src/main/resources/assets"
+            srcDirs "src/main/resources/data"
+        }
+    }
+    }
+     //exclude 'META-INF', 'META-INF/**'
+        }
+        
+
+    }
 }
+
+
 
 task runclient(type: JavaExec) {
     group = "MCP"
@@ -105,23 +160,14 @@ task setup() {
     }
 }
 
-task copyAssets {
+task copyAssets (type: Copy){
     group = "MCP"
     description = "Download and place the assets into the run folder"
+    
     dependsOn ':downloadAssets'
     mkdir 'run/assets'
     copy {
         from downloadAssets.output.path
         into 'run/assets'
-    }
-}
-
-idea.project.settings {
-    runConfigurations {
-        "Minecraft"(Application) {
-            mainClass = 'mcp.client.Start'
-            workingDirectory = "$projectDir/run"
-            moduleName = idea.module.name + '.main'
-        }
     }
 }
